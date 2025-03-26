@@ -1,3 +1,5 @@
+// GamePanel.java
+
 package brickBreaker;
 
 import javax.swing.*;
@@ -20,6 +22,20 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
     private BrickManager brickLayout;
 
     public GamePanel() {
+        /*
+         * Instructions... ---thisizaro
+         * Change this annoying constants to variables... Make global variables for the
+         * number of rows and columns of the bricks. AND MOST IMPORTANTLY THE WINDOW
+         * SIZE!!
+         * IT TURNS INTO MESSED UP CODE IF YOU USE CONSTANTS LIKE THIS... YOU NEED TO
+         * CHANGE THE VALUE
+         * EVERYWHERE LATER...
+         * So please just make a variable and use it everywhere...
+         * 
+         * for the window.
+         * the window size is 900x700 for now but it is creating an issue in the
+         * actionPerformed function since it has some other value... Fix the issue...
+         */
         brickLayout = new BrickManager(6, 10);
         addKeyListener(this);
         setFocusable(true);
@@ -95,9 +111,10 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
             if (new Rectangle(ballX, ballY, 20, 20).intersects(new Rectangle(paddleX, 600, 120, 10))) {
                 ballYSpeed = -ballYSpeed;
             }
-            outerLoop:
             for (int i = 0; i < brickLayout.bricks.length; i++) {
                 for (int j = 0; j < brickLayout.bricks[0].length; j++) {
+                    // I added the part to check or(is it -1) to check if it is an obstacle ---
+                    // thisizaro
                     if (brickLayout.bricks[i][j] > 0) {
                         int brickX = j * brickLayout.brickWidth + 80;
                         int brickY = i * brickLayout.brickHeight + 50;
@@ -121,6 +138,8 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
                             } else {
                                 ballYSpeed = -ballYSpeed;
                             }
+                            ballX += ballXSpeed;
+                            ballY += ballYSpeed;
                         }
                     }
                 }
