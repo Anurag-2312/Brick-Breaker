@@ -127,7 +127,7 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
             }
             ballX += ballXSpeed;
             ballY += ballYSpeed;
-            if (ballX < 0 || ballX > 670) {
+            if (ballX < 0 || ballX > 870) {
                 ballXSpeed = -ballXSpeed;
             }
             if (ballY < 0) {
