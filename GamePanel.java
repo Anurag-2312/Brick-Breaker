@@ -1,3 +1,4 @@
+// GamePanel.java
 package brickBreaker;
 
 import javax.swing.*;
@@ -7,24 +8,46 @@ import java.awt.event.*;
 
 public class GamePanel extends JPanel implements KeyListener, ActionListener {
 
+    private static final int win_width = 900;
+    private static final int win_height = 700;
+    private static final int brick_rows = 6;
+    private static final int brick_cols = 10;
+    private static final int ball_size = 20;
+    private static final int paddle_width = 120;
+    private static final int paddle_height = 10;
+
     private boolean isPlaying = false;
     private int currentScore = 0;
-    private int bricksRemaining = 6 * 10;
+    private int bricksRemaining = brick_rows * brick_cols;
     private Timer gameTimer;
     private int speed = 8;
-    private int paddleX = 400;
-    private int ballX = 220;
-    private int ballY = 450;
+    private int paddleX = win_width / 2 - paddle_width / 2;
+    private int ballX = win_width / 2;
+    private int ballY = win_height - 150;
     private int ballXSpeed = -1;
     private int ballYSpeed = -2;
     private BrickManager brickLayout;
 
     public GamePanel() {
-        brickLayout = new BrickManager(6, 10);
+        /*
+         * Instructions... ---thisizaro
+         * Change this annoying constants to variables... Make global variables for the
+         * number of rows and columns of the bricks. AND MOST IMPORTANTLY THE WINDOW
+         * SIZE!!
+         * IT TURNS INTO MESSED UP CODE IF YOU USE CONSTANTS LIKE THIS... YOU NEED TO
+         * CHANGE THE VALUE
+         * EVERYWHERE LATER...
+         * So please just make a variable and use it everywhere...
+         * 
+         * for the window.
+         * the window size is 900x700 for now but it is creating an issue in the
+         * actionPerformed function since it has some other value... Fix the issue...
+         */
+        brickLayout = new BrickManager(brick_rows, brick_cols);
         addKeyListener(this);
         setFocusable(true);
         setFocusTraversalKeysEnabled(false);
-        setPreferredSize(new Dimension(900, 700));
+        setPreferredSize(new Dimension(win_width, win_height));
         gameTimer = new Timer(speed, this);
         gameTimer.start();
     }
@@ -32,16 +55,16 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
     public void paint(Graphics g) {
         // Background
         g.setColor(Color.BLACK);
-        g.fillRect(1, 1, 900, 700);
+        g.fillRect(1, 1, win_width, win_height);
 
         // Draw bricks
         brickLayout.draw((Graphics2D) g);
 
         // Borders
         g.setColor(Color.WHITE);
-        g.fillRect(0, 0, 3, 700);
-        g.fillRect(0, 0, 900, 3);
-        g.fillRect(899, 0, 3, 700);
+        g.fillRect(0, 0, 3, win_height);
+        g.fillRect(0, 0, win_width, 3);
+        g.fillRect(win_width - 1, 0, 3, win_height);
 
         // Score Display
         g.setColor(Color.WHITE);
@@ -51,11 +74,11 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
 
         // Paddle
         g.setColor(Color.GREEN);
-        g.fillRect(paddleX, 600, 120, 10);
+        g.fillRect(paddleX, win_height - 100, paddle_width, paddle_height);
 
         // Ball
         g.setColor(Color.RED);
-        g.fillOval(ballX, ballY, 20, 20);
+        g.fillOval(ballX, ballY, ball_size, ball_size);
 
         // Game won scenario
         if (bricksRemaining <= 0) {
@@ -95,9 +118,10 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
             if (new Rectangle(ballX, ballY, 20, 20).intersects(new Rectangle(paddleX, 600, 120, 10))) {
                 ballYSpeed = -ballYSpeed;
             }
-            outerLoop:
             for (int i = 0; i < brickLayout.bricks.length; i++) {
                 for (int j = 0; j < brickLayout.bricks[0].length; j++) {
+                    // I added the part to check or(is it -1) to check if it is an obstacle ---
+                    // thisizaro
                     if (brickLayout.bricks[i][j] > 0) {
                         int brickX = j * brickLayout.brickWidth + 80;
                         int brickY = i * brickLayout.brickHeight + 50;
@@ -121,13 +145,15 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
                             } else {
                                 ballYSpeed = -ballYSpeed;
                             }
+                            ballX += ballXSpeed;
+                            ballY += ballYSpeed;
                         }
                     }
                 }
             }
             ballX += ballXSpeed;
             ballY += ballYSpeed;
-            if (ballX < 0 || ballX > 870) {
+            if (ballX < 0 || ballX > win_width - ball_size - 10) {
                 ballXSpeed = -ballXSpeed;
             }
             if (ballY < 0) {
@@ -144,8 +170,8 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-            if (paddleX >= 800) {
-                paddleX = 800;
+            if (paddleX >= win_width - paddle_width) {
+                paddleX = win_width - paddle_width;
             } else {
                 moveRight();
             }
@@ -160,14 +186,14 @@ public class GamePanel extends JPanel implements KeyListener, ActionListener {
         if (e.getKeyCode() == KeyEvent.VK_ENTER) {
             if (!isPlaying) {
                 isPlaying = true;
-                ballX = 220;
-                ballY = 450;
+                ballX = win_width / 2;
+                ballY = win_height - 150;
                 ballXSpeed = -1;
                 ballYSpeed = -2;
-                paddleX = 400;
+                paddleX = win_width / 2 - paddle_width / 2;
                 currentScore = 0;
-                bricksRemaining = 6 * 10;
-                brickLayout = new BrickManager(3, 7);
+                bricksRemaining = brick_rows * brick_cols;
+                brickLayout = new BrickManager(brick_rows, brick_cols);
             }
         }
     }

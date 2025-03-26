@@ -1,3 +1,4 @@
+// BrickManager.java
 package brickBreaker;
 
 import java.awt.*;
@@ -13,8 +14,13 @@ public class BrickManager {
         for (int i = 0; i < bricks.length; i++) {
             for (int j = 0; j < bricks[0].length; j++) {
                 double rand = Math.random();
+                // for testing puroposes, I will set the value of the bricks to 999
+                // bricks[i][j] = 2;
+                // I will comment the code below to test the obstacles (debugging purposes)
+                // --- thisizaro
+
                 if (rand < 0.2) {
-                    bricks[i][j] = -1; // 20% chance of being an obstacle
+                    bricks[i][j] = 999; // 20% chance of being an obstacle
                 } else if (rand < 0.5) {
                     bricks[i][j] = 2; // 30% chance of being a strong brick
                 } else {
@@ -29,7 +35,14 @@ public class BrickManager {
     public void draw(Graphics2D g) {
         for (int i = 0; i < bricks.length; i++) {
             for (int j = 0; j < bricks[0].length; j++) {
-                if (bricks[i][j] > 0) {
+                // The value of the brick helps with last block of this loop for the printing
+                // the brick strength (3 lines) --- thisizaro
+
+                int brickValue = bricks[i][j];
+                int x = j * brickWidth + 80; // Calculate X position
+                int y = i * brickHeight + 50; // Calculate Y position
+
+                if (bricks[i][j] > 0 && bricks[i][j] <= 2) {
                     if (bricks[i][j] == 2) {
                         g.setColor(Color.RED); // Strong bricks are red
                     } else {
@@ -39,12 +52,28 @@ public class BrickManager {
                     g.setStroke(new BasicStroke(3));
                     g.setColor(Color.BLACK);
                     g.drawRect(j * brickWidth + 80, i * brickHeight + 50, brickWidth, brickHeight);
-                } else if (bricks[i][j] == -1) {
+                } else if (bricks[i][j] > 2) {
+                    // THIS IS THE PART FOR THE OBSTACLE... NOT DECIDED IF I SHOULD KEEP THE VALUE
+                    // -1 OR CHNAGE IT TO 9999 --- thisizaro
+
                     g.setColor(Color.GRAY); // Obstacles are gray
                     g.fillRect(j * brickWidth + 80, i * brickHeight + 50, brickWidth, brickHeight);
                     g.setStroke(new BasicStroke(3));
                     g.setColor(Color.BLACK);
                     g.drawRect(j * brickWidth + 80, i * brickHeight + 50, brickWidth, brickHeight);
+                }
+
+                // Draw brick strength (except obstacles) debugging purposes
+                // (IfBlock)---thisizaro
+                if (brickValue > 0) {
+                    g.setColor(Color.BLACK); // Text color
+                    g.setFont(new Font("Arial", Font.BOLD, 18));
+                    // Center the text
+                    String text = String.valueOf(brickValue);
+                    FontMetrics fm = g.getFontMetrics();
+                    int textX = x + (brickWidth - fm.stringWidth(text)) / 2;
+                    int textY = y + (brickHeight + fm.getAscent()) / 2 - 2;
+                    g.drawString(text, textX, textY);
                 }
             }
         }
